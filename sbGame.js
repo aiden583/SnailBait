@@ -44,8 +44,32 @@ var canvas = document.getElementById('snailbait-game-canvas'),
   runnerImage = new Image(),
   fps;
 
+var backgroundOffset = 0;
+// translate coordinate system to draw bg with offset
 function drawBackground() {
+  context.translate(-backgroundOffset, 0);
   context.drawImage(background, 0, 0);
+  context.drawImage(background, background.width, 0);
+  context.translate(backgroundOffset, 0); // recover coordinate
+}
+
+// calculate offset based on time
+var BACKGROUND_VELOCITY = 25,
+  bgVelocity = BACKGROUND_VELOCITY;
+function setBackgroungOffset(now) {
+  backgroundOffset += ((now - lastAnimationFrameTime) / 1000) * bgVelocity;
+  if (backgroundOffset > background.width || backgroundOffset < 0) {
+    // not sure setting 0 correct
+    backgroundOffset = 0;
+  }
+}
+
+// velocity po/ne according to turning right or left
+function turnLeft() {
+  bgVelocity = -BACKGROUND_VELOCITY;
+}
+function turnRight() {
+  bgVelocity = BACKGROUND_VELOCITY;
 }
 
 function drawRunner() {
@@ -82,54 +106,29 @@ function drawPlatforms() {
 }
 
 function draw(now) {
+  setBackgroungOffset(now);
   drawBackground();
   drawRunner();
   drawPlatforms();
 }
 
-function testFunc() {
-  // context.fillText('1234534645754678ASDFSHFGHJ', 100, 150);
-  context.fillText('1234534645754678ASDFSHFGHJ', 0, 5);
-  // testDrawGrid();
-}
-
-// draw some lines to make sure the axis
-function testDrawGrid() {
-  context.lineWidth = 1;
-  context.strokeStyle = '#ffffff';
-  for (let i = 0; i < canvas.height; i += 10) {
-    context.beginPath();
-    if (i <= 10) {
-      context.lineWidth = 3;
-      context.strokeStyle = 'rgb(0,250,0)';
-    } else {
-      context.lineWidth = 1;
-      context.strokeStyle = '#ffffff';
-    }
-    context.moveTo(0, i);
-    context.lineTo(canvas.height, i);
-    context.stroke();
-  }
-}
-
-var lastAnimationFrameTIme = 0,
+var lastAnimationFrameTime = 0,
   lastFpsUpdateTime = 0,
   fpsELement = document.getElementById('snailbait-fps');
 function calculateFps(now) {
-  var fps = (1 / (now - lastAnimationFrameTIme)) * 1000;
+  var fps = (1 / (now - lastAnimationFrameTime)) * 1000;
   if (now - lastFpsUpdateTime > 1000) {
     lastFpsUpdateTime = now;
     fpsELement.innerHTML = 'fps: ' + fps.toFixed(4);
   }
-  lastAnimationFrameTIme = now;
+  lastAnimationFrameTime = now;
   return fps;
 }
 
 function animate(now) {
-  fps = calculateFps(now);
   draw(now);
-  testFunc();
-  // requestNextAnimationFrame(animate);
+  fps = calculateFps(now);
+  requestNextAnimationFrame(animate);
 }
 
 function startGame() {
