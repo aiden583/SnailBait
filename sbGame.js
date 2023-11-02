@@ -136,7 +136,7 @@ function startGame() {
 }
 
 function initializeImages() {
-  background.src = 'image/background.png';
+  background.src = 'image/background-mirrored.png';
   runnerImage.src = 'image/runner.png';
   background.onload = function (e) {
     startGame();
