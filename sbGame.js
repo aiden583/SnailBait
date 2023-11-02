@@ -48,6 +48,7 @@ var backgroundOffset = 0;
 // translate coordinate system to draw bg with offset
 function drawBackground() {
   context.translate(-backgroundOffset, 0);
+  context.drawImage(background, -background.width, 0);
   context.drawImage(background, 0, 0);
   context.drawImage(background, background.width, 0);
   context.translate(backgroundOffset, 0); // recover coordinate
@@ -58,6 +59,7 @@ var BACKGROUND_VELOCITY = 25,
   bgVelocity = BACKGROUND_VELOCITY;
 function setBackgroungOffset(now) {
   backgroundOffset += ((now - lastAnimationFrameTime) / 1000) * bgVelocity;
+  // if (backgroundOffset < background.width || backgroundOffset > 0) {
   if (backgroundOffset > background.width || backgroundOffset < 0) {
     // not sure setting 0 correct
     backgroundOffset = 0;
